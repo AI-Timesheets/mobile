@@ -25,85 +25,27 @@ import getTheme from "./native-base-theme/components";
 import material from "./native-base-theme/variables/material";
 
 import CameraView from "./screens/CameraView";
-import HowTo from "./screens/HowTo";
+import Home from "./screens/Home2";
+import Login from "./screens/Login";
+import { getStorageItem } from "./actions/StorageActions";
 
 export function HomeScreen() {
   const [code, setCode] = useState("");
 
+  token = getStorageItem("jwt");
+  console.log(token);
+
+  if (token) {
+    return (
+      <Container>
+        <Home />
+      </Container>
+    );
+  }
+
   return (
     <Container>
-      {/* <Content
-        contentContainerStyle={{
-          flex: 1,
-        }}
-      >
-
-      </Content> */}
-      <Content
-        contentContainerStyle={{
-          flex: 3,
-          // paddingHorizontal: 20,
-          backgroundColor: "#385373"
-        }}
-      >
-        <Card>
-          <CardItem bordered={false} >
-            <Thumbnail source={require("./assets/aitime-logo.png")} />
-            <Body>
-              <Text>Facial Recognition Clock-in and Clock-out</Text>
-              <Text note>Don't have an account? </Text>
-              <Button
-                rounded
-                onPress={() => {
-                  Linking.openURL("https://app.aitimesheets.com/signup");
-                }}
-              >
-                <Text>Sign up</Text>
-              </Button>
-            </Body>
-          </CardItem>
-        </Card>
-        <Text style={{ color: "white", textAlign: "center" }}>
-          Please enter your company code below.
-        </Text>
-      </Content>
-      <Content
-        contentContainerStyle={{
-          flex: 4,
-          paddingHorizontal: 20,
-          backgroundColor: "#385373",
-          alignItems: "center"
-        }}
-      >
-        <SmoothPinCodeInput
-          cellStyle={{
-            borderBottomWidth: 2,
-            borderColor: "white"
-          }}
-          codeLength={5}
-          cellStyleFocused={{
-            borderColor: "black"
-          }}
-          value={code}
-          onTextChange={code => setCode(code)}
-        />
-      </Content>
-      <Content
-        contentContainerStyle={{
-          flex: 5,
-          paddingHorizontal: 20,
-          backgroundColor: "#385373",
-          alignItems: "center"
-        }}
-      >
-        <Button
-          rounded
-          success
-          onPress={() => this.props.navigation.navigate("CameraView")}
-        >
-          <Text>Get Started</Text>
-        </Button>
-      </Content>
+      <Login />
     </Container>
   );
 }
@@ -124,7 +66,9 @@ const RootStack = createStackNavigator(
   {
     "AI Timesheets": HomeScreen,
     CameraView: CameraView,
-    "How To Use": HowTo
+    Home: Home,
+    Login: Login
+    // "How To Use": HowTo
   },
   {
     initialRouteName: "AI Timesheets"

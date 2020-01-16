@@ -5,7 +5,6 @@ export function clockInRequest
     return fetch('https://f9bcf1fb.ngrok.io/api/time-clock/clock-in', {method: 'POST', data: {}})
       .then(response => response.text())
       .then(responseJson => {
-        console.log(responseJson);
         return responseJson;
       });
   } catch (error) {
