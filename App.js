@@ -1,51 +1,37 @@
 import React, { useState, useEffect } from "react";
-import {
-  Container,
-  Text,
-  Header,
-  Content,
-  Item,
-  Input,
-  Icon,
-  Button,
-  Card,
-  CardItem,
-  Left,
-  Thumbnail,
-  Body,
-  Right
-} from "native-base";
-
-import { Image, Linking, KeyboardAvoidingView } from "react-native";
+import { Container, Text } from "native-base";
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
-import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 
-import getTheme from "./native-base-theme/components";
-import material from "./native-base-theme/variables/material";
-
-import CameraView from "./screens/CameraView";
-import Home from "./screens/Home2";
-import Login from "./screens/Login";
 import { getStorageItem } from "./actions/StorageActions";
 
-export function HomeScreen() {
-  const [code, setCode] = useState("");
+import CameraView from "./screens/CameraView";
+import Home from "./screens/Home";
+import Login from "./screens/Login";
+import Help from "./screens/Help";
 
-  token = getStorageItem("jwt");
-  console.log(token);
+export function HomeScreen(props) {
+  const [code, setCode] = useState("");
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    getStorageItem("jwt").then((token) => {
+      setToken(token)
+    })
+  }, []);
 
   if (token) {
+    console.log(token);
     return (
       <Container>
-        <Home />
+        <Home navigation={props.navigation} />
       </Container>
     );
   }
 
   return (
     <Container>
-      <Login />
+      <Login navigation={props.navigation} />
     </Container>
   );
 }
@@ -65,10 +51,10 @@ class DetailsScreen extends React.Component {
 const RootStack = createStackNavigator(
   {
     "AI Timesheets": HomeScreen,
-    CameraView: CameraView,
+    "Employee": CameraView,
     Home: Home,
-    Login: Login
-    // "How To Use": HowTo
+    Login: Login,
+    Help: Help
   },
   {
     initialRouteName: "AI Timesheets"

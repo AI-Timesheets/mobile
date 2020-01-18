@@ -1,9 +1,13 @@
 import { getStorageItem } from './StorageActions.js';
 
-export function getCompany() {
-  token = getStorageItem("jwt");
+export async function getCompany() {
+  let token = '';
 
-  return fetch('https://cc4fbe1c.ngrok.io/api/mobile-auth/self', {
+  token = await getStorageItem("jwt").then((token) => {
+      return token;
+  })
+
+  return fetch('https://6c77a110.ngrok.io/api/mobile-auth/self', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

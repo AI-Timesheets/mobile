@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -9,48 +9,144 @@ import {
   Text,
   StatusBar
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { Button, Icon } from "native-base";
+// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { login } from '../actions/LoginActions';
-import { setStorageItem } from '../actions/StorageActions';
-import { getCompany } from '../actions/CompanyActions';
+import { login } from "../actions/LoginActions";
+import { setStorageItem } from "../actions/StorageActions";
+import { getCompany } from "../actions/CompanyActions";
 
-function Home(props) {
-  const company = getCompany().then((response) => {
-    return response.json();
-  }).then((data) => {
-    return data;
+function getClock() {
+  const [time, setTime] = useState({
+    day: new Date().getDate(),
+    month: new Date().toLocaleString("default", { month: "long" }),
+    year: new Date().getFullYear(),
+    hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
+    min: new Date().getMinutes(),
+    sec: new Date().getSeconds()
   });
 
-  console.log(company);
+  const tick = () => {
+    setTime({
+      day: new Date().getDate(),
+      month: new Date().toLocaleString("default", { month: "long" }),
+      year: new Date().getFullYear(),
+      hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
+      min: new Date().getMinutes(),
+      sec: new Date().getSeconds()
+    });
+  };
+
+  useEffect(() => {
+    setInterval(tick, 1000);
+  }, []);
+
+  return (
+    <>
+      <Text
+        style={{
+          fontFamily: "HelveticaNeue-Bold",
+          color: "rgba(255,255,255,1)",
+          fontSize: 14,
+          textAlign: "center"
+        }}
+      >
+        {time.month} {time.day} {time.year}
+      </Text>
+      <Text
+        style={{
+          fontFamily: "HelveticaNeue-Bold",
+          color: "rgba(255,255,255,1)",
+          fontSize: 15,
+          textAlign: "center"
+        }}
+      >
+        {((time.hour + 11) % 12) + 1}:{time.min} {time.hour >= 12 ? "PM" : "AM"}
+      </Text>
+    </>
+  );
+}
+function Home(props) {
+  [company, setCompany] = useState({});
+
+  useEffect(() => {
+    getCompany()
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setCompany(data.result);
+      });
+  }, []);
+
+  // console.log(`comp ${JSON.stringify(company)}`);
   return (
     <View style={styles.root}>
       <View style={styles.background}>
         <View style={styles.rectStack}>
           <ImageBackground
             style={styles.rect}
-            imageStyle={styles.rect_imageStyle}
             source={require("../assets/images/Gradient_LZGIVfZ.png")}
           >
-            <View style={styles.logo}>
-              <Text style={styles.text2}>Clock Out</Text>
+            <View
+              style={{
+                alignSelf: "center",
+                marginTop: 130
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "HelveticaNeue-Bold",
+                  color: "rgba(255,255,255,1)",
+                  fontSize: 30,
+                  textAlign: "center"
+                }}
+              >
+                {company.name}
+              </Text>
+              {getClock()}
             </View>
           </ImageBackground>
-          <View style={styles.form}>
-          <Text style={styles.text3}>Clock In or Clock Out Below:</Text>
-            <View style={styles.username}>
+          <View
+            style={{
+              top: 290,
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column"
+            }}
+          >
+            <View>
               <TouchableOpacity
-                // onPress={}
-                style={styles.button}
+                style={{
+                  width: 330,
+                  marginTop: 20,
+                  height: 250,
+                  opacity: 1,
+                  borderRadius: 5,
+                  flexDirection: "row",
+                  alignSelf: "center"
+                }}
               >
-                <Text style={styles.text2}>Clock In</Text>
+                <Button
+                  style={{
+                    flex: 1,
+                    paddingLeft: 10
+                  }}
+                  bordered
+                  full
+                  iconRight
+                  light
+                  onPress={() => props.navigation.navigate("Employee")}
+                >
+                  <Text style={styles.button_text}>Employee Start</Text>
+                  <Icon
+                    style={{ color: "rgba(255,255,255,1)", paddingLeft: 10 }}
+                    name="arrow-forward"
+                  />
+                </Button>
               </TouchableOpacity>
-              <TouchableOpacity
-                // onPress={}
-                style={styles.button}
-              >
-                <Text style={styles.text2}>Clock Out</Text>
-              </TouchableOpacity>
+
+              {/* <Text style={styles.button_text}>Employee Start</Text> */}
             </View>
           </View>
           <View style={styles.footerTexts}>
@@ -62,7 +158,12 @@ function Home(props) {
               <Text style={styles.createAccount}>Create Account</Text>
             </TouchableOpacity>
             <View style={styles.button2Filler}></View>
-            <Text style={styles.needHelp}>Need Help?</Text>
+            <Text
+              style={styles.needHelp}
+              onPress={() => props.navigation.navigate("Help")}
+            >
+              Need Help?
+            </Text>
           </View>
         </View>
       </View>
@@ -91,64 +192,24 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0
   },
-  rect_imageStyle: {
-    // opacity: 0.99
-  },
-  logo: {
-    width: 102,
-    height: 111,
-    marginTop: 130,
-    marginLeft: 150
-  },
   image: {
     width: 83,
     height: 83,
     marginLeft: 10
   },
-  form: {
-    top: 290,
-    // left: 60,
-    // width: 278,
-    // height: 161,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "column"
-    // position: "absolute"
-  },
-  username: {
-    width: 330,
-    marginTop: 20,
-    height: 59,
-    backgroundColor: "rgba(251,247,247,0.25)",
-    opacity: 1,
-    borderRadius: 5,
-    flexDirection: "row",
-    alignSelf: "center"
-  },
-  icon22: {
-    color: "rgba(255,255,255,1)",
-    fontSize: 30,
-    marginLeft: 20,
-    alignSelf: "center"
-  },
-  usernameInput: {
-    height: 30,
-    color: "rgba(255,255,255,1)",
-    flex: 1,
-    marginRight: 11,
-    marginLeft: 11,
-    alignSelf: "center"
-  },
-  usernameFiller: {
-    flex: 1
-  },
   button: {
     flex: 1,
-    backgroundColor: "rgba(31,178,204,1)",
+    backgroundColor: "rgba(178,255,102,1)",
     borderRadius: 5,
     justifyContent: "center"
   },
   text2: {
+    color: "rgba(255,255,255,1)",
+    alignSelf: "center"
+  },
+  button_text: {
+    fontFamily: "Helvetica Neue",
+    fontSize: 15,
     color: "rgba(255,255,255,1)",
     alignSelf: "center"
   },

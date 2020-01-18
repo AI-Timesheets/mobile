@@ -13,21 +13,20 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 import { login } from '../actions/LoginActions';
 import { setStorageItem } from '../actions/StorageActions';
-import Home from "./Home2";
+import Home from "./Home";
 
 function Login(props) {
   const [code, setCode] = useState("");
-  console.log(props);
 
   function handleLogin() {
     login(code).then(resp => {
       return resp.json()
     }).then(data => {
       setStorageItem("jwt", data.result.jwt);
-      this.props.navigation.navigate("Home");
+      props.navigation.replace("Home");
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
     });
   }
 
@@ -84,8 +83,8 @@ function Login(props) {
               onPress={() => props.navigation.navigate("SignUp")}
               style={styles.button2}
             >
-              <View style={styles.createAccountFiller}></View>
-              <Text style={styles.createAccount}>Create Account</Text>
+              <View style={styles.logoutFiller}></View>
+              <Text style={styles.logout}>Log out</Text>
             </TouchableOpacity>
             <View style={styles.button2Filler}></View>
             <Text style={styles.needHelp}>Need Help?</Text>
@@ -197,10 +196,10 @@ const styles = StyleSheet.create({
     height: 14,
     alignSelf: "flex-end"
   },
-  createAccountFiller: {
+  logoutFiller: {
     flex: 1
   },
-  createAccount: {
+  logout: {
     color: "rgba(255,255,255,0.5)"
   },
   button2Filler: {
