@@ -7,7 +7,7 @@ export async function getCompany() {
       return token;
   })
 
-  return fetch('https://6c77a110.ngrok.io/api/mobile-auth/self', {
+  return fetch('https://fdfb5d54.ngrok.io/api/mobile-auth/self', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

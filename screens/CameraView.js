@@ -7,7 +7,9 @@ import { clockInRequest } from "../actions/ClockInActions";
 export default function CameraView() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  let camera = {}
+  const [modalVisible, setModalVisible] = useState(false);
+
+  let camera = {};
 
   useEffect(() => {
     (async () => {
@@ -28,11 +30,13 @@ export default function CameraView() {
     let photo = await camera.takePictureAsync({
       base64: true
     });
-    clockInRequest(photo).then((response) => {
-      return response.json()
-    }).then((json) => {
-      console.log(json);
-    })
+    clockInRequest(photo)
+      .then(response => {
+        return response.json();
+      })
+      .then(json => {
+        console.log(json);
+      });
   }
 
   return (
@@ -50,6 +54,7 @@ export default function CameraView() {
           flexDirection: "row"
         }}
       >
+
         <Button
           full
           primary
@@ -62,10 +67,7 @@ export default function CameraView() {
             _clockIn(image);
           }}
         >
-          <Text style={{ fontSize: 18,  color: "white" }}>
-            {" "}
-            Clock In{" "}
-          </Text>
+          <Text style={{ fontSize: 18, color: "white" }}> Clock In </Text>
         </Button>
         <Button
           full
@@ -79,9 +81,7 @@ export default function CameraView() {
             _clockIn(image);
           }}
         >
-          <Text style={{ fontSize: 18,  color: "white" }}>
-            Clock Out
-          </Text>
+          <Text style={{ fontSize: 18, color: "white" }}>Clock Out</Text>
         </Button>
       </View>
     </Camera>

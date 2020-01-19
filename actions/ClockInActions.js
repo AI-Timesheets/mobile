@@ -10,7 +10,7 @@ export async function clockInRequest(image) {
   })
 
 
-  return fetch('https://6c77a110.ngrok.io/api/time-clock/clock-in', {
+  return fetch('https://fdfb5d54.ngrok.io/api/time-clock/clock-in', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
