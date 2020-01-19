@@ -7,7 +7,6 @@ import { clockInRequest } from "../actions/ClockInActions";
 export default function CameraView() {
   const [hasPermission, setHasPermission] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [modalVisible, setModalVisible] = useState(false);
 
   let camera = {};
 
