@@ -57,6 +57,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  logo: {
+    width: 100,
+    height: 100,
+  },
   header: {
     paddingHorizontal: 28,
     paddingBottom: theme.SIZES.BASE,

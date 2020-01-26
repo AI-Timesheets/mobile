@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Argon FREE React Native",
-    "slug": "argon-free-react-native",
+    "name": "AI Timesheets",
+    "slug": "aitimesheets",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
@@ -24,6 +24,9 @@
     ],
     "ios": {
       "supportsTablet": true
+    },
+    "extra": {
+      "apiUrl": "https://48931989.ngrok.io"
     }
   }
 }

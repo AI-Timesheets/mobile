@@ -13,7 +13,7 @@ const assetImages = [
   Images.LogoOnboarding,
   Images.Logo,
   Images.Pro,
-  Images.ArgonLogo,
+  Images.AitimeLogo,
   Images.iOSLogo,
   Images.androidLogo
 ];
@@ -35,7 +35,7 @@ export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
   }
-  
+
   render() {
     if(!this.state.isLoadingComplete) {
       return (

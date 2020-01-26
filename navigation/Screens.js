@@ -14,6 +14,10 @@ import Onboarding from "../screens/Onboarding";
 import Pro from "../screens/Pro";
 import Profile from "../screens/Profile";
 import Register from "../screens/Register";
+import Login from "../screens/Login";
+import CompanyLogout from "../screens/CompanyLogout";
+import EmployeeStart from "../screens/EmployeeStart";
+import FaceTerminal from "../screens/FaceTerminal";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
 // drawer
@@ -141,8 +145,26 @@ const AppStack = createDrawerNavigator(
         drawerLabel: () => {}
       }
     },
+    Login: {
+      screen: Login,
+      navigationOptions: {
+        drawerLabel: () => {}
+      }
+    },
+    CompanyLogout: {
+      screen: CompanyLogout,
+      navigationOptions: {
+        drawerLabel: () => {}
+      }
+    },
     Home: {
       screen: HomeStack,
+      navigationOptions: {
+        drawerLabel: () => {}
+      }
+    },
+    EmployeeStart: {
+      screen: EmployeeStart,
       navigationOptions: navOpt => ({
         drawerLabel: ({ focused }) => (
           <DrawerItem focused={focused} title="Home" />
