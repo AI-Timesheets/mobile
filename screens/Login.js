@@ -20,6 +20,7 @@ const { width, height } = Dimensions.get("screen");
 
 function Login(props) {
   const [code, setCode] = useState("");
+  const [error, setError] = useState(false);
 
   function handleLogin() {
     login(code)
@@ -27,12 +28,17 @@ function Login(props) {
         return resp.json();
       })
       .then(data => {
-        setStorageItem("jwt", data.result.jwt);
-        console.log(props.navigation);
-        props.navigation.navigate("EmployeeStart");
+        if (data.success) {
+          setStorageItem("jwt", data.result.jwt);
+          props.navigation.navigate("EmployeeStart");
+        } else {
+          setCode("");
+          setError(true);
+        }
       })
       .catch(err => {
-        // console.log(err);
+        setCode("");
+        setError(true);
       });
   }
 
@@ -54,11 +60,7 @@ function Login(props) {
               <Block flex>
                 <Block flex center>
                   <View style={{ flex: 1 }}>
-                    <Block
-                      width={width * 0.8}
-                      style={{ marginTop: 12 }}
-                      center
-                    >
+                    <Block width={width * 0.8} style={{ marginTop: 12 }} center>
                       <SmoothPinCodeInput
                         cellStyle={{
                           borderBottomWidth: 2,
@@ -78,6 +80,15 @@ function Login(props) {
                     </Block>
 
                     <Block middle>
+                      {error && (
+                        <Text
+                          style={{ paddingTop: 5 }}
+                          size={12}
+                          color={argonTheme.COLORS.ERROR}
+                        >
+                          Incorrect login code, please try again.
+                        </Text>
+                      )}
                       <Button
                         color="primary"
                         style={styles.createButton}
