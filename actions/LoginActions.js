@@ -1,5 +1,9 @@
+import Constants from 'expo-constants';
+
+const apiUrl = Constants.manifest.extra.apiUrl;
+
 export function login(code) {
-  return fetch('https://fdfb5d54.ngrok.io/api/mobile-auth/login', {
+  return fetch(`${apiUrl}/api/mobile-auth/login`, {
     method: 'POST',
     headers: {
       Accept: 'application/json',

@@ -3,71 +3,18 @@ import {
   StyleSheet,
   View,
   ImageBackground,
-  Image,
-  TextInput,
   TouchableOpacity,
   Text,
   StatusBar
 } from "react-native";
 import { Button, Icon } from "native-base";
-// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import SmoothPinCodeInput from "react-native-smooth-pincode-input";
-import { login } from "../actions/LoginActions";
-import { setStorageItem } from "../actions/StorageActions";
+import { LinearGradient } from "expo-linear-gradient";
 import { getCompany } from "../actions/CompanyActions";
+import Clock from "../components/Clock";
 
-function getClock() {
-  const [time, setTime] = useState({
-    day: new Date().getDate(),
-    month: new Date().toLocaleString("default", { month: "long" }),
-    year: new Date().getFullYear(),
-    hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
-    min: new Date().getMinutes(),
-    sec: new Date().getSeconds()
-  });
-
-  const tick = () => {
-    setTime({
-      day: new Date().getDate(),
-      month: new Date().toLocaleString("default", { month: "long" }),
-      year: new Date().getFullYear(),
-      hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
-      min: new Date().getMinutes(),
-      sec: new Date().getSeconds()
-    });
-  };
-
-  useEffect(() => {
-    setInterval(tick, 1000);
-  }, []);
-
-  return (
-    <>
-      <Text
-        style={{
-          fontFamily: "HelveticaNeue-Bold",
-          color: "rgba(255,255,255,1)",
-          fontSize: 14,
-          textAlign: "center"
-        }}
-      >
-        {time.month} {time.day} {time.year}
-      </Text>
-      <Text
-        style={{
-          fontFamily: "HelveticaNeue-Bold",
-          color: "rgba(255,255,255,1)",
-          fontSize: 15,
-          textAlign: "center"
-        }}
-      >
-        {((time.hour + 11) % 12) + 1}:{time.min} {time.hour >= 12 ? "PM" : "AM"}
-      </Text>
-    </>
-  );
-}
 function Home(props) {
   [company, setCompany] = useState({});
+  [employee, setEmployee] = useState({});
 
   useEffect(() => {
     getCompany()
@@ -79,14 +26,13 @@ function Home(props) {
       });
   }, []);
 
-  // console.log(`comp ${JSON.stringify(company)}`);
   return (
     <View style={styles.root}>
       <View style={styles.background}>
         <View style={styles.rectStack}>
           <ImageBackground
             style={styles.rect}
-            source={require("../assets/images/Gradient_LZGIVfZ.png")}
+            source={require("../assets/images/bg.png")}
           >
             <View
               style={{
@@ -96,7 +42,7 @@ function Home(props) {
             >
               <Text
                 style={{
-                  fontFamily: "HelveticaNeue-Bold",
+                  fontFamily: "montserrat",
                   color: "rgba(255,255,255,1)",
                   fontSize: 30,
                   textAlign: "center"
@@ -104,7 +50,7 @@ function Home(props) {
               >
                 {company.name}
               </Text>
-              {getClock()}
+              <Clock />
             </View>
           </ImageBackground>
           <View
@@ -136,7 +82,7 @@ function Home(props) {
                   full
                   iconRight
                   light
-                  onPress={() => props.navigation.navigate("Employee")}
+                  onPress={() => props.navigation.navigate("Time Clock")}
                 >
                   <Text style={styles.button_text}>Employee Start</Text>
                   <Icon
@@ -145,25 +91,7 @@ function Home(props) {
                   />
                 </Button>
               </TouchableOpacity>
-
-              {/* <Text style={styles.button_text}>Employee Start</Text> */}
             </View>
-          </View>
-          <View style={styles.footerTexts}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate("SignUp")}
-              style={styles.button2}
-            >
-              <View style={styles.createAccountFiller}></View>
-              <Text style={styles.createAccount}>Create Account</Text>
-            </TouchableOpacity>
-            <View style={styles.button2Filler}></View>
-            <Text
-              style={styles.needHelp}
-              onPress={() => props.navigation.navigate("Help")}
-            >
-              Need Help?
-            </Text>
           </View>
         </View>
       </View>
@@ -208,7 +136,7 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   button_text: {
-    fontFamily: "Helvetica Neue",
+    fontFamily: "montserrat",
     fontSize: 15,
     color: "rgba(255,255,255,1)",
     alignSelf: "center"
