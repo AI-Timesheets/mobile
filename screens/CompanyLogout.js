@@ -28,7 +28,8 @@ function CompanyLogout(props) {
 
   async function handleLogout() {
     const company = await getLoggedInCompany();
-    if (company.company_code == code) {
+    if (company.company_code.toUpperCase() == code.toUpperCase()) {
+      setCode("");
       deleteStorageItem("jwt").then(() => {
         props.navigation.goBack();
       });

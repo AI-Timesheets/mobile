@@ -3,7 +3,7 @@
     "name": "AI Timesheets",
     "slug": "aitimesheets",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
+    "sdkVersion": "36.0.0",
     "platforms": [
       "ios",
       "android"
@@ -27,6 +27,7 @@
     },
     "extra": {
       "apiUrl": "https://5da85ba0.ngrok.io"
-    }
+    },
+    "description": "Argon React Native, based on Argon Design System. Coded by Creative Tim"
   }
 }

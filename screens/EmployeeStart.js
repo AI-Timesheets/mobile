@@ -89,6 +89,7 @@ function EmployeeStart(props) {
                       fontSize: 16
                     }}
                     style={{ textAlign: "center", width: "90%" }}
+                    onPress={() => props.navigation.navigate("FaceTerminal")}
                   >
                     Employee Start
                   </Button>

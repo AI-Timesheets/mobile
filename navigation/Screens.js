@@ -163,6 +163,12 @@ const AppStack = createDrawerNavigator(
         drawerLabel: () => {}
       }
     },
+    FaceTerminal: {
+      screen: FaceTerminal,
+      navigationOptions: {
+        drawerLabel: () => {}
+      }
+    },
     EmployeeStart: {
       screen: EmployeeStart,
       navigationOptions: navOpt => ({
