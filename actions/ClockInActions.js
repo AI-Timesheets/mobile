@@ -28,6 +28,29 @@ export async function clockInRequest(image) {
     });
 }
 
+export async function recognizeRequest(image) {
+  let token = '';
+
+  token = await getStorageItem("jwt").then((token) => {
+    return token;
+  })
+
+
+  return fetch(`${apiUrl}/api/time-clock/recognize`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        photos: [
+          image.base64
+        ]
+      })
+    });
+}
+
 export async function clockOutRequest(image) {
   let token = '';
 
