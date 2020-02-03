@@ -16,6 +16,8 @@ import {
   recognizeRequest
 } from "../actions/ClockInActions";
 import BubbleText from "../components/BubbleText";
+import { argonTheme } from "../constants";
+
 const { width, height } = Dimensions.get("screen");
 
 export default function FaceTerminal(props) {
@@ -24,7 +26,10 @@ export default function FaceTerminal(props) {
   const [loading, setLoading] = useState(false);
   const [clockInResponse, setClockInResponse] = useState({});
   const [recognizing, setRecognizing] = useState(false);
+  const [error, setError] = useState("");
   const [recognizeResponse, setRecognizeResponse] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+
   let camera = {};
 
   useEffect(() => {
@@ -42,6 +47,19 @@ export default function FaceTerminal(props) {
     }
   }, [clockInResponse]);
 
+  useEffect(() => {
+    if (camera !== undefined) {
+      async function runRecognize() {
+        await recognize();
+      }
+
+      runRecognize().then(() => {
+        setRecognizing(false);
+      });
+    }
+
+  }, [faceDetected]);
+
   if (hasPermission === null) {
     return <View />;
   }
@@ -51,12 +69,9 @@ export default function FaceTerminal(props) {
   }
 
   async function _clockIn() {
-    let photo = await camera.takePictureAsync({
-      base64: true
-    });
     setLoading(true);
 
-    const response = await clockInRequest(photo)
+    const response = await clockInRequest(recognizeResponse.result.photo_id)
       .then(response => {
         return response.json();
       })
@@ -70,12 +85,9 @@ export default function FaceTerminal(props) {
   }
 
   async function _clockOut() {
-    let photo = await camera.takePictureAsync({
-      base64: true
-    });
     setLoading(true);
 
-    const response = await clockOutRequest(photo)
+    const response = await clockOutRequest(recognizeResponse.result.photo_id)
       .then(response => {
         return response.json();
       })
@@ -89,11 +101,11 @@ export default function FaceTerminal(props) {
   }
 
   async function recognize() {
-    if (!recognizing) {
+    if (!recognizing && camera !== undefined) {
       setRecognizing(true);
-
       let photo = await camera
         .takePictureAsync({
+          quality: 0.2,
           base64: true
         })
         .catch(err => {
@@ -108,12 +120,29 @@ export default function FaceTerminal(props) {
           console.log(json);
           setRecognizing(false);
           setRecognizeResponse(json);
+          setLoading(false);
         });
 
-      return response;
+      // return response;
+    } else {
+      setFaceDetected(false);
     }
   }
 
+  function faceDetect(detected) {
+    if (detected.faces.length > 1) {
+      setError("Multiple faces detected");
+    } else if (detected.faces.length == 1 && !faceDetected) {
+      setFaceDetected(true);
+    }
+  }
+
+  function reset() {
+    setLoading(false);
+    setRecognizing(false);
+    setRecognizeResponse(false);
+    setFaceDetected(false);
+  }
   return (
     <Camera
       style={{ flex: 1 }}
@@ -121,13 +150,11 @@ export default function FaceTerminal(props) {
       ref={ref => {
         camera = ref;
       }}
-      onFacesDetected={recognize}
+      onFacesDetected={faceDetect}
       faceDetectorSettings={{
         mode: FaceDetector.Constants.Mode.accurate,
         detectLandmarks: FaceDetector.Constants.Landmarks.none,
-        runClassifications: FaceDetector.Constants.Classifications.all,
-        minDetectionInterval: 100,
-        tracking: true
+        minDetectionInterval: 100
       }}
     >
       <Block flex bottom style={{ height: height, width: width }}>
@@ -139,14 +166,29 @@ export default function FaceTerminal(props) {
 
         {recognizeResponse && (
           <Block flex bottom style={{ marginTop: 300, width: 200 }}>
-            <BubbleText message={`${recognizeResponse.name} recognized`} />
+            <BubbleText message={`${recognizeResponse.result.first_name} ${recognizeResponse.result.last_name} recognized \n Last clocked in: ${recognizeResponse.result.latest_clock_in[0].timestamp}`} />
           </Block>
         )}
 
         <Block flex bottom style={{ marginTop: height - 200 }}>
-          <BubbleText message="Place your face within the camera view." />
+          <BubbleText message="Place your face within the camera view." color={argonTheme.COLORS.MUTED} />
         </Block>
-
+        </Block>
+        <Block flex end style={{ height: height, width: width }}>
+          <Button
+              full
+              primary
+              style={{
+                flex: 0.5,
+                alignSelf: "flex-end",
+                alignItems: "center"
+              }}
+              onPress={image => {
+                const employee = reset();
+              }}
+            >
+              <Text style={{ fontSize: 18, color: "white" }}> Reset </Text>
+            </Button>
         {recognizeResponse && (
           <>
             <Button
@@ -158,7 +200,7 @@ export default function FaceTerminal(props) {
                 alignItems: "center"
               }}
               onPress={image => {
-                const employee = _clockIn(image);
+                const employee = _clockIn();
               }}
             >
               <Text style={{ fontSize: 18, color: "white" }}> Clock In </Text>
@@ -172,7 +214,7 @@ export default function FaceTerminal(props) {
                 alignItems: "center"
               }}
               onPress={image => {
-                const response = _clockOut(image);
+                const response = _clockOut();
 
                 if (response.status == "success") {
                   props.navigation.navigate("Employee", { employee: employee });
@@ -183,7 +225,7 @@ export default function FaceTerminal(props) {
             </Button>
           </>
         )}
-      </Block>
+        </Block>
     </Camera>
   );
 }

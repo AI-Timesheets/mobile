@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 
 const apiUrl = Constants.manifest.extra.apiUrl;
 
-export async function clockInRequest(image) {
+export async function clockInRequest(photoId) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -14,18 +14,14 @@ export async function clockInRequest(image) {
 
 
   return fetch(`${apiUrl}/api/time-clock/clock-in`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        photos: [
-          image.base64
-        ]
-      })
-    });
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ photoId: photoId })
+  });
 }
 
 export async function recognizeRequest(image) {
@@ -37,21 +33,21 @@ export async function recognizeRequest(image) {
 
 
   return fetch(`${apiUrl}/api/time-clock/recognize`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        photos: [
-          image.base64
-        ]
-      })
-    });
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      photos: [
+        image.base64
+      ]
+    })
+  });
 }
 
-export async function clockOutRequest(image) {
+export async function clockOutRequest(photoId) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -60,16 +56,12 @@ export async function clockOutRequest(image) {
 
 
   return fetch(`${apiUrl}/api/time-clock/clock-out`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        photos: [
-          image.base64
-        ]
-      })
-    });
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ photoId: photoId })
+  });
 }

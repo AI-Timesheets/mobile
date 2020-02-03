@@ -38,6 +38,21 @@ const FadeInView = props => {
 
 // You can then use your `FadeInView` in place of a `View` in your components:
 export default props => {
+  const color = props.color ? props.color : argonTheme.COLORS.PRIMARY;
+  const timeout = props.timeout ? props.timeout : null;
+  const [isHidden, setHidden] = useState(false);
+
+  if (isHidden) {
+    return (
+      <></>
+    )
+  }
+  useEffect(() => {
+    if (timeout) {
+      setTimeout(function(){ setHidden(true) }, timeout);
+    }
+  }, []);
+
   return (
     <Block
       style={{
