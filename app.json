@@ -26,7 +26,7 @@
       "supportsTablet": true
     },
     "extra": {
-      "apiUrl": "http://api-dev.aitimesheets.com"
+      "apiUrl": "https://api-ci.aitimesheets.com"
     },
     "description": "Argon React Native, based on Argon Design System. Coded by Creative Tim"
   }

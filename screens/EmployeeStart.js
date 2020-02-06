@@ -29,7 +29,13 @@ function EmployeeStart(props) {
         return response.json();
       })
       .then(data => {
+        console.log(data);
+        if (data.exception) {
+          props.navigation.navigate("Login")
+        }
         setCompany(data.result);
+      }).catch( err => {
+        console.log(err);
       });
   }, []);
 

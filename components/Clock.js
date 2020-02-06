@@ -6,7 +6,7 @@ export default function Clock() {
       day: new Date().getDate(),
       month: new Date().toLocaleString("default", { month: "long" }),
       year: new Date().getFullYear(),
-      hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
+      hour: new Date().toLocaleString("defult", { day: "2-digit" }),
       min: new Date().getMinutes(),
       sec: new Date().getSeconds()
     });
@@ -16,7 +16,7 @@ export default function Clock() {
         day: new Date().getDate(),
         month: new Date().toLocaleString("default", { month: "long" }),
         year: new Date().getFullYear(),
-        hour: new Date().toLocaleString("deafult", { day: "2-digit" }),
+        hour: new Date().toLocaleString("defult", { day: "2-digit" }),
         min: new Date().getMinutes(),
         sec: new Date().getSeconds()
       });

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Animated, View } from "react-native";
+import { Animated, Dimensions, View } from "react-native";
 import { Block, Text } from "galio-framework";
 import { argonTheme } from "../constants";
+
+const { width, height } = Dimensions.get("screen");
 
 const FadeInView = props => {
   const [fadeAnim] = useState(new Animated.Value(0.6)); // Initial value for opacity: 0
@@ -56,29 +58,23 @@ export default props => {
   return (
     <Block
       style={{
-        width: 400,
-        height: 50,
+        width: width,
+        height: 100,
         justifyContent: "center"
       }}
     >
       <FadeInView
         style={{
-          borderRadius: 25,
-          backgroundColor: argonTheme.COLORS.PRIMARY,
+          borderRadius: 10,
+          backgroundColor: color,
           position: "absolute",
           top: 0,
           right: 0,
           bottom: 0,
           left: 0
         }}
-      ></FadeInView>
-      <Text
-        size={18}
-        color={argonTheme.COLORS.WHITE}
-        style={{ textAlign: "center" }}
-      >
-        {props.message}
-      </Text>
+      />
+        {props.children}
     </Block>
   );
 };
