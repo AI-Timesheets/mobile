@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 
 const apiUrl = Constants.manifest.extra.apiUrl;
 
-export async function clockInRequest(photoId) {
+export async function clockInRequest(loginCode, photoId) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -20,7 +20,7 @@ export async function clockInRequest(photoId) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ photoId: photoId })
+    body: JSON.stringify({ photoId, loginCode })
   });
 }
 
@@ -47,7 +47,7 @@ export async function recognizeRequest(image) {
   });
 }
 
-export async function clockOutRequest(photoId) {
+export async function clockOutRequest(loginCode, photoId) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -62,6 +62,6 @@ export async function clockOutRequest(photoId) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ photoId: photoId })
+    body: JSON.stringify({ photoId, loginCode })
   });
 }

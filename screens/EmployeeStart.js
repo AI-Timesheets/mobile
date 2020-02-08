@@ -11,9 +11,10 @@ import { Block, Text, theme } from "galio-framework";
 
 import { getCompany } from "../actions/CompanyActions";
 import { Button } from "../components";
+import Clock from "../components/Clock";
+
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import Clock from "../components/Clock";
 
 const { width, height } = Dimensions.get("screen");
 
