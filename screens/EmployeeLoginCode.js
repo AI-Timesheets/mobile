@@ -12,8 +12,18 @@ import { Block, Checkbox, Text, theme } from "galio-framework";
 
 import SmoothPinCodeInput from "react-native-smooth-pincode-input";
 
-import { login } from "../actions/LoginActions";
-import { setStorageItem, getStorageItem, deleteStorageItem } from "../actions/StorageActions";
+import {
+  clockInRequest,
+  clockOutRequest,
+  statusRequest
+} from "../actions/ClockInActions";
+import {
+  setStorageItem,
+  getStorageItem,
+  deleteStorageItem
+} from "../actions/StorageActions";
+
+import ClockActionModal from "../components/ClockActionModal";
 
 import getLoggedInCompany from "../util/token";
 
@@ -22,21 +32,52 @@ import { Images, argonTheme } from "../constants";
 
 const { width, height } = Dimensions.get("screen");
 
-function CompanyLogout(props) {
+function EmployeeLoginCode(props) {
   const [code, setCode] = useState("");
   const [error, setError] = useState(false);
+  const [employee, setEmployee] = useState(false);
+  const [photo, setPhoto] = useState(false);
+  const [status, setStatus] = useState(false);
+  const [modalVisibile, setModalVisible] = useState(false);
 
-  async function handleLogout() {
+  async function handleLogin() {
     const company = await getLoggedInCompany();
-    if (company.company_code.toUpperCase() == code.toUpperCase()) {
-      setCode("");
-      deleteStorageItem("jwt").then(() => {
-        props.navigation.goBack();
+    const status = await statusRequest(code, company)
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        if (json !== undefined && json.hasOwnProperty("error")) {
+          setError(json.error);
+          setCode("");
+        } else {
+          setStatus(json.result.status)
+          setEmployee(json.result.employee);
+          setPhoto(json.result.employee.photo);
+        }
       });
-    } else {
-      setCode("");
-      setError(true);
-    }
+
+    // console.log(status);
+    // if (company.company_code.toUpperCase() == code.toUpperCase()) {
+    //   setCode("");
+    //   deleteStorageItem("jwt").then(() => {
+    //     props.navigation.goBack();
+    //   });
+    // } else {
+    //   setCode("");
+    //   setError(true);
+    // }
+  }
+
+  function closeModal() {
+    reset();
+    setModalVisible(false);
+  }
+
+  function reset() {
+    setCode("");
+    setError(false);
+    setEmployee(false);
   }
 
   return (
@@ -49,6 +90,17 @@ function CompanyLogout(props) {
         <Block flex middle>
           <KeyboardAvoidingView behavior="padding" disabled>
             <Block style={styles.registerContainer}>
+            {employee && (
+              <Block flex center style={{ height: height, width: width }}>
+                <ClockActionModal
+                  employee={employee}
+                  photo={photo}
+                  status={status}
+                  closeModal={closeModal}
+                />
+              </Block>
+            )}
+
               <Block row flex={0.5} style={styles.socialConnect}>
                 <Block
                   style={{
@@ -69,9 +121,15 @@ function CompanyLogout(props) {
                     />
                   </TouchableOpacity>
                 </Block>
-                <Block row middle center width={width * 0.9} style={{paddingTop: 5}}>
+                <Block
+                  row
+                  middle
+                  center
+                  width={width * 0.9}
+                  style={{ paddingTop: 5 }}
+                >
                   <Text color={argonTheme.COLORS.BLACK} size={16}>
-                    Enter your company login code to logout
+                    Enter your employee login code to clock in or out
                   </Text>
                 </Block>
               </Block>
@@ -112,10 +170,10 @@ function CompanyLogout(props) {
                     <Button
                       color="primary"
                       style={styles.createButton}
-                      onPress={handleLogout}
+                      onPress={handleLogin}
                     >
                       <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                        LOGOUT
+                        Start
                       </Text>
                     </Button>
                   </Block>
@@ -183,4 +241,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CompanyLogout;
+export default EmployeeLoginCode;

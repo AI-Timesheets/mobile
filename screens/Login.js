@@ -66,7 +66,7 @@ function Login(props) {
                           borderBottomWidth: 2,
                           borderColor: argonTheme.COLORS.MUTED
                         }}
-                        placeholder="⭑"
+                        placeholder="•"
                         codeLength={5}
                         cellStyleFocused={{
                           borderColor: argonTheme.COLORS.MUTED

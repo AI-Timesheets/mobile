@@ -12,7 +12,8 @@ import { Button, Spinner, Block, theme } from "galio-framework";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
 
-import { recognizeRequest } from "../actions/ClockInActions";
+import { recognizeRequest, statusRequest } from "../actions/ClockInActions";
+import getLoggedInCompany from "../util/token";
 
 import BubbleText from "../components/BubbleText";
 import ClockActionModal from "../components/ClockActionModal";
@@ -33,6 +34,7 @@ export default function FaceTerminal(props) {
   const [recognizeResponse, setRecognizeResponse] = useState(false);
   const [faceDetected, setFaceDetected] = useState(false);
   const [modalVisibile, setModalVisible] = useState(false);
+  const [status, setStatus] = useState(false);
 
   let camera = {};
 
@@ -63,14 +65,6 @@ export default function FaceTerminal(props) {
     }
   }, [faceDetected]);
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-
-  if (hasPermission === false) {
-    return <Text>No access to camera</Text>;
-  }
-
   async function recognize() {
     if (!recognizing && camera !== undefined && camera !== {}) {
       setRecognizing(true);
@@ -89,7 +83,6 @@ export default function FaceTerminal(props) {
         })
         .then(json => {
           console.log(json);
-          setRecognizing(false);
           try {
             setRecognizeResponse(json.result);
           } catch (exception) {
@@ -99,9 +92,23 @@ export default function FaceTerminal(props) {
             reset();
           }
           setLoading(false);
+          return
         })
         .catch(exc => {
           reset();
+        });
+
+      const company = await getLoggedInCompany();
+
+      const status = await statusRequest(recognizeResponse.employee.login_code, company)
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          console.log(json);
+          if (json !== undefined && ! json.hasOwnProperty("error")) {
+            setStatus(json.result.status)
+          }
         });
 
       // return response;
@@ -133,9 +140,21 @@ export default function FaceTerminal(props) {
     setRecognizeResponse(false);
     setFaceDetected(false);
   }
+
+  if (hasPermission === null) {
+    // TODO make a screen for this
+    return <View />;
+  }
+
+  if (hasPermission === false) {
+    // TODO make a screen for this
+    return <Text>No access to camera</Text>;
+  }
+
+
   return (
     <Camera
-      style={{ flex: 1 }}
+      style={{ flex: 1, height: height }}
       type={Camera.Constants.Type.front}
       ref={ref => {
         camera = ref;
@@ -170,10 +189,15 @@ export default function FaceTerminal(props) {
         </TouchableOpacity>
       </Block>
 
-      {/* <Block style={{ zIndex: 2 }}>
-
-      </Block> */}
-      <Block flex center style={{ height: height, width: width }}>
+      <Block
+        style={{
+          flex: 1,
+          flexDirection: "column",
+          alignItems: "center",
+          height: height,
+          width: width
+        }}
+      >
         {recognizing && (
           <Block flex bottom style={{ marginTop: 300, width: 200 }}>
             <BubbleText>
@@ -187,6 +211,7 @@ export default function FaceTerminal(props) {
             <ClockActionModal
               employee={recognizeResponse.employee}
               photo={recognizeResponse.photos[0]}
+              status={status}
               closeModal={closeModal}
             />
           </Block>
@@ -201,6 +226,24 @@ export default function FaceTerminal(props) {
             </BubbleText>
           </Block>
         )}
+      </Block>
+      <Block
+        style={{
+          zIndex: 2,
+          alignSelf: 'center'
+        }}
+      >
+        <TouchableOpacity style={{ zIndex: 3 }}>
+          <Button
+            color="muted"
+            // style={{ width: 100 }}
+            onPress={() => props.navigation.navigate("EmployeeLoginCode")}
+          >
+            <Text style={{ fontSize: 18, color: "white" }}>
+              Use Login Code
+            </Text>
+          </Button>
+        </TouchableOpacity>
       </Block>
     </Camera>
   );

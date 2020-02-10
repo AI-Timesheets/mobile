@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
-import { getCompany } from "../actions/CompanyActions";
+import {
+  getCompany,
+  employeesClockedInRequest
+} from "../actions/CompanyActions";
 import { Button } from "../components";
 import Clock from "../components/Clock";
 
@@ -21,10 +24,20 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 function EmployeeStart(props) {
-  [company, setCompany] = useState({});
-  [employee, setEmployee] = useState({});
+  const [company, setCompany] = useState({});
+  const [employee, setEmployee] = useState({});
+  const [numClockedIn, setNumClockedIn] = useState(false);
+
+  async function getEmployees() {
+    const loggedInEmployees = await employeesClockedInRequest(company.id);
+    return loggedInEmployees;
+  }
 
   useEffect(() => {
+    async function getEmployeeCount() {
+      return getEmployees();
+    }
+
     getCompany()
       .then(response => {
         return response.json();
@@ -32,11 +45,20 @@ function EmployeeStart(props) {
       .then(data => {
         console.log(data);
         if (data.exception) {
-          props.navigation.navigate("Login")
+          props.navigation.navigate("Login");
         }
         setCompany(data.result);
-      }).catch( err => {
+      })
+      .catch(err => {
         console.log(err);
+      });
+
+    getEmployeeCount()
+      .then(resp => {
+        return resp.json();
+      })
+      .then(json => {
+        setNumClockedIn(json.length);
       });
   }, []);
 
@@ -66,19 +88,21 @@ function EmployeeStart(props) {
                   >
                     {company.name}
                   </Text>
-                  <Block row>
-                    <Text
-                      bold
-                      size={14}
-                      color="#525F7F"
-                      style={{ paddingRight: 2 }}
-                    >
-                      2
-                    </Text>
-                    <Text size={14} color="#525F7F">
-                      Currently Clocked In
-                    </Text>
-                  </Block>
+                  {numClockedIn !== false && (
+                    <Block row>
+                      <Text
+                        bold
+                        size={14}
+                        color="#525F7F"
+                        style={{ paddingRight: 2 }}
+                      >
+                        {JSON.stringify(numClockedIn)}
+                      </Text>
+                      <Text size={14} color="#525F7F">
+                        Currently Clocked In
+                      </Text>
+                    </Block>
+                  )}
                 </Block>
               </Block>
               <Block flex>
@@ -111,7 +135,9 @@ function EmployeeStart(props) {
                       color: "#5E72E4",
                       fontSize: 12
                     }}
-                    onPress={() => { props.navigation.navigate("CompanyLogout") }}
+                    onPress={() => {
+                      props.navigation.navigate("CompanyLogout");
+                    }}
                   >
                     Log out company
                   </Button>

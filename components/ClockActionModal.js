@@ -16,21 +16,24 @@ const { width, height } = Dimensions.get("screen");
 export default function ClockActionModal({
   employee,
   photo,
+  status,
   closeModal,
   ...props
 }) {
-  console.log(employee);
-  console.log(photo);
-
   const [loading, setLoading] = useState(false);
   const [clockInResponse, setClockInResponse] = useState({});
   const [latestClockIn, setLatestClockIn] = useState("Never");
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     if (employee.latest_clock_in.length > 0) {
       setLatestClockIn(employee.latest_clock_in[0].timestamp);
     }
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {}, 3000);
+  }, [done === true]);
 
   async function _clockIn() {
     setLoading(true);
@@ -42,7 +45,8 @@ export default function ClockActionModal({
       .then(json => {
         console.log(json);
         setLoading(false);
-        setClockInResponse(json);
+        setClockInResponse(json.result);
+        setDone(true);
       });
 
     return response;
@@ -57,13 +61,14 @@ export default function ClockActionModal({
       })
       .then(json => {
         setLoading(false);
-        setClockInResponse(json);
+        setClockInResponse(jso.result);
+        setDone(true);
       });
 
     return response;
   }
 
-  console.log(photo.url);
+  console.log(status);
 
   return (
     <Modal
@@ -83,54 +88,94 @@ export default function ClockActionModal({
             />
           </Block>
         </TouchableOpacity>
-        <Block middle style={{ paddingTop: 50 }}>
-          <Image source={{ uri: photo.url }} style={{ width: 200, height: 200 }} />
-          <Spinner
-          visible={loading}
-          textContent={'Loading...'}
-          textStyle={{color: argonTheme.COLORS.WHITE}}
-        />
+        {done && (
+          <Block middle style={{ paddingTop: 50 }}>
+            <Image
+              source={require("../assets/check.png")}
+              style={{ width: 200, height: 200 }}
+            />
 
-          <Text bold style={{ fontSize: 25, color: argonTheme.COLORS.BLACK }}>
-            {employee.first_name} {employee.last_name}
-          </Text>
-          <Text
-            style={{
-              fontSize: 18,
-              textAlign: "center",
-              color: argonTheme.COLORS.BLACK
-            }}
-          >
-            Last clocked in: {latestClockIn}
-          </Text>
-        </Block>
-        <Block flex row middle>
-          <Button
-            primary
-            shadowless
-            style={{
-              width: 120,
-              marginRight: 40
-            }}
-            onPress={image => {
-              _clockIn();
-            }}
-          >
-            <Text style={{ fontSize: 18, color: "white" }}> Clock In </Text>
-          </Button>
-          <Button
-            info
-            shadowless
-            style={{
-              width: 120
-            }}
-            onPress={image => {
-              _clockOut();
-            }}
-          >
-            <Text style={{ fontSize: 18, color: "white" }}>Clock Out</Text>
-          </Button>
-        </Block>
+            <Text
+              bold
+              style={{
+                marginTop: 100,
+                fontSize: 35,
+                color: argonTheme.COLORS.BLACK
+              }}
+            >
+              Success
+            </Text>
+          </Block>
+        )}
+        {!done && (
+          <>
+            <Block middle style={{ paddingTop: 50 }}>
+              <Image
+                source={{ uri: photo.url }}
+                style={{ width: 200, height: 200 }}
+              />
+              <Spinner
+                visible={loading}
+                textContent={"Loading..."}
+                textStyle={{ color: argonTheme.COLORS.WHITE }}
+              />
+
+              <Text
+                bold
+                style={{ fontSize: 25, color: argonTheme.COLORS.BLACK }}
+              >
+                {employee.first_name} {employee.last_name}
+              </Text>
+              {employee.latest_clock_in.length > 0 && (
+                <Text
+                  style={{
+                    fontSize: 18,
+                    textAlign: "center",
+                    color: argonTheme.COLORS.BLACK
+                  }}
+                >
+                  Last clocked in: {employee.latest_clock_in[0].timestamp}
+                </Text>
+              )}
+            </Block>
+            <Block flex row middle>
+              {status === "CLOCKED_IN" && (
+                <Button
+                  info
+                  shadowless
+                  style={{
+                    width: 120
+                  }}
+                  onPress={image => {
+                    _clockOut();
+                  }}
+                >
+                  <Text style={{ fontSize: 18, color: "white" }}>
+                    Clock Out
+                  </Text>
+                </Button>
+              )}
+              {status !== "CLOCKED_IN" && (
+                <Button
+                  primary
+                  shadowless
+                  style={{
+                    width: 120,
+                    marginRight: 40
+                  }}
+                  onPress={image => {
+                    _clockIn();
+                  }}
+                >
+                  <Text style={{ fontSize: 18, color: "white" }}>
+                    {" "}
+                    Clock In{" "}
+                  </Text>
+                </Button>
+              )}
+            </Block>
+          </>
+        )}
       </Block>
     </Modal>
   );

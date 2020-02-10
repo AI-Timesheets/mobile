@@ -17,6 +17,7 @@ import Register from "../screens/Register";
 import Login from "../screens/Login";
 import CompanyLogout from "../screens/CompanyLogout";
 import EmployeeStart from "../screens/EmployeeStart";
+import EmployeeLoginCode from "../screens/EmployeeLoginCode";
 import FaceTerminal from "../screens/FaceTerminal";
 import Elements from "../screens/Elements";
 import Articles from "../screens/Articles";
@@ -153,6 +154,12 @@ const AppStack = createDrawerNavigator(
     },
     CompanyLogout: {
       screen: CompanyLogout,
+      navigationOptions: {
+        drawerLabel: () => {}
+      }
+    },
+    EmployeeLoginCode: {
+      screen: EmployeeLoginCode,
       navigationOptions: {
         drawerLabel: () => {}
       }

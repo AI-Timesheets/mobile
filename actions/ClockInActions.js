@@ -54,7 +54,6 @@ export async function clockOutRequest(loginCode, photoId) {
     return token;
   })
 
-
   return fetch(`${apiUrl}/api/time-clock/clock-out`, {
     method: 'POST',
     headers: {
@@ -63,5 +62,24 @@ export async function clockOutRequest(loginCode, photoId) {
       "Authorization": `Bearer ${token}`
     },
     body: JSON.stringify({ photoId, loginCode })
+  });
+}
+
+export async function statusRequest(loginCode, company) {
+  let token = '';
+
+  token = await getStorageItem("jwt").then((token) => {
+    return token;
+  })
+
+
+  return fetch(`${apiUrl}/api/time-clock/status`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+    body: JSON.stringify({ loginCode, company })
   });
 }

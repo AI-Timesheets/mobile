@@ -19,3 +19,19 @@ export async function getCompany() {
     },
   });
 }
+
+export async function employeesClockedInRequest(companyId) {
+  let token = '';
+
+  token = await getStorageItem("jwt").then((token) => {
+    return token;
+  })
+
+  return fetch(`${apiUrl}/api/company/${companyId}/clocked-in-employees`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      "Authorization": `Bearer ${token}`
+    },
+  });
+}

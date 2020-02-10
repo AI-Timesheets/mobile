@@ -20,7 +20,18 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 function Modal(props) {
-  console.log(props.children);
+  const [numClockedIn, setClockedIn] = useState("");
+
+  async function getEmployees() {
+    const loggedInEmployees = await employeesClockedInRequest()
+  }
+
+  useEffect(() => {
+    async function getEmployeeCount() {
+      return getEmployees()
+    }
+    const loggedInEmployees = await employeesClockedInRequest()
+  }, [])
 
   return (
     <Block flex style={styles.profileCard}>
