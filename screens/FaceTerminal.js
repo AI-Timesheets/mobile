@@ -11,6 +11,8 @@ import {
 import { Button, Spinner, Block, theme } from "galio-framework";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 import { recognizeRequest, statusRequest } from "../actions/ClockInActions";
 import getLoggedInCompany from "../util/token";
@@ -35,15 +37,26 @@ export default function FaceTerminal(props) {
   const [faceDetected, setFaceDetected] = useState(false);
   const [modalVisibile, setModalVisible] = useState(false);
   const [status, setStatus] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState(null);
 
   let camera = {};
 
   useEffect(() => {
     (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === "granted");
+      const { cameraStatus } = await Camera.requestPermissionsAsync();
+      const { locationStatus } = await Permissions.askAsync(Permissions.LOCATION);
+      setHasPermission(cameraStatus === "granted" && locationStatus === "granted");
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (hasPermission == true) {
+        const location = await Location.getCurrentPositionAsync();
+        setCurrentLocation(location);
+      }
+    })();
+  }, [hasPermission]);
 
   useEffect(() => {
     if (clockInResponse) {
@@ -82,7 +95,6 @@ export default function FaceTerminal(props) {
           return response.json();
         })
         .then(json => {
-          console.log(json);
           try {
             setRecognizeResponse(json.result);
           } catch (exception) {
@@ -210,6 +222,7 @@ export default function FaceTerminal(props) {
           <Block flex center style={{ height: height, width: width }}>
             <ClockActionModal
               employee={recognizeResponse.employee}
+              currentLocation={currentLocation}
               photo={recognizeResponse.photos[0]}
               status={status}
               closeModal={closeModal}

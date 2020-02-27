@@ -5,7 +5,7 @@ import Constants from 'expo-constants';
 
 const apiUrl = Constants.manifest.extra.apiUrl;
 
-export async function clockInRequest(loginCode, photoId) {
+export async function clockInRequest(loginCode, photoId, latitude, longitude) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -20,7 +20,7 @@ export async function clockInRequest(loginCode, photoId) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ photoId, loginCode })
+    body: JSON.stringify({ photoId, loginCode, latitude, longitude })
   });
 }
 
@@ -47,7 +47,7 @@ export async function recognizeRequest(image) {
   });
 }
 
-export async function clockOutRequest(loginCode, photoId) {
+export async function clockOutRequest(loginCode, photoId, latitude, longitude) {
   let token = '';
 
   token = await getStorageItem("jwt").then((token) => {
@@ -61,7 +61,7 @@ export async function clockOutRequest(loginCode, photoId) {
       'Content-Type': 'application/json',
       "Authorization": `Bearer ${token}`
     },
-    body: JSON.stringify({ photoId, loginCode })
+    body: JSON.stringify({ photoId, loginCode, latitude, longitude })
   });
 }
 

@@ -15,6 +15,7 @@ const { width, height } = Dimensions.get("screen");
 
 export default function ClockActionModal({
   employee,
+  currentLocation,
   photo,
   status,
   closeModal,
@@ -38,8 +39,19 @@ export default function ClockActionModal({
   async function _clockIn() {
     setLoading(true);
 
-    const response = await clockInRequest(employee.login_code, photo.id)
-      .then(response => {
+    let latitude = null;
+    let longitude = null;
+    if (currentLocation && currentLocation.coords) {
+      latitude = currentLocation.coords.latitude;
+      longitude = currentLocation.coords.longitude;
+    }
+
+    const response = await clockInRequest(
+      employee.login_code,
+      photo.id,
+      latitude,
+      longitude
+    ).then(response => {
         return response.json();
       })
       .then(json => {
@@ -55,8 +67,19 @@ export default function ClockActionModal({
   async function _clockOut() {
     setLoading(true);
 
-    const response = await clockOutRequest(employee.login_code, photo.id)
-      .then(response => {
+    let latitude = null;
+    let longitude = null;
+    if (currentLocation && currentLocation.coords) {
+      latitude = currentLocation.coords.latitude;
+      longitude = currentLocation.coords.longitude;
+    }
+
+    const response = await clockOutRequest(
+      employee.login_code,
+      photo.id,
+      latitude,
+      longitude
+    ).then(response => {
         return response.json();
       })
       .then(json => {
