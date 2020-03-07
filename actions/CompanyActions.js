@@ -9,7 +9,7 @@ export async function getCompany() {
   token = await getStorageItem("jwt").then((token) => {
       return token;
   })
-  console.log(token);
+
   return fetch(`${apiUrl}/api/mobile-auth/self`, {
     method: 'GET',
     headers: {

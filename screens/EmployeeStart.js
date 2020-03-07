@@ -8,6 +8,7 @@ import {
   Platform
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
+import Spinner from "react-native-loading-spinner-overlay";
 
 import {
   getCompany,
@@ -24,6 +25,7 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 function EmployeeStart(props) {
+  const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState({});
   const [employee, setEmployee] = useState({});
   const [numClockedIn, setNumClockedIn] = useState(false);
@@ -34,33 +36,64 @@ function EmployeeStart(props) {
   }
 
   useEffect(() => {
-    async function getEmployeeCount() {
-      return getEmployees();
-    }
-
     getCompany()
       .then(response => {
         return response.json();
       })
       .then(data => {
-        console.log(data);
         if (data.exception) {
           props.navigation.navigate("Login");
+        } else {
+          setCompany(data.result);
+          setLoading(false);
         }
-        setCompany(data.result);
       })
       .catch(err => {
         console.log(err);
       });
-
-    getEmployeeCount()
-      .then(resp => {
-        return resp.json();
-      })
-      .then(json => {
-        setNumClockedIn(json.length);
-      });
   }, []);
+
+  useEffect(() => {
+    async function getEmployeeCount() {
+      return getEmployees();
+    }
+
+    if (company) {
+      getEmployeeCount()
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+
+          setNumClockedIn(json.result.length);
+        });
+    }
+  }, [company]);
+
+  if (loading) {
+    <Block flex style={styles.profile}>
+      <Block flex>
+        <ImageBackground
+          source={Images.RegisterBackground}
+          style={styles.profileContainer}
+          imageStyle={styles.profileBackground}
+        >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ width, marginTop: "25%" }}
+          >
+            <Block flex style={styles.profileCard}>
+              <Spinner
+                visible={loading}
+                textContent={"Loading..."}
+                textStyle={{ color: argonTheme.COLORS.WHITE }}
+              />
+            </Block>
+          </ScrollView>
+        </ImageBackground>
+      </Block>
+    </Block>;
+  }
 
   return (
     <Block flex style={styles.profile}>

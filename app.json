@@ -26,8 +26,8 @@
       "supportsTablet": true
     },
     "extra": {
-      "apiUrl": "https://f1e480d4.ngrok.io"
+      "apiUrl": "https://570b9b57.ngrok.io"
     },
-    "description": "Argon React Native, based on Argon Design System. Coded by Creative Tim"
+    "description": "AI Timesheets is a photo based clock-in and clock-out terminal that utilizes facial recognition artificial intelligence to identify employees."
   }
 }

@@ -11,8 +11,8 @@ import {
 import { Button, Spinner, Block, theme } from "galio-framework";
 import { Camera } from "expo-camera";
 import * as FaceDetector from "expo-face-detector";
-import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+import * as Location from "expo-location";
+import * as Permissions from "expo-permissions";
 
 import { recognizeRequest, statusRequest } from "../actions/ClockInActions";
 import getLoggedInCompany from "../util/token";
@@ -27,7 +27,8 @@ import { isFullFace } from "../util/facedetector";
 const { width, height } = Dimensions.get("screen");
 
 export default function FaceTerminal(props) {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [cameraPermission, setCameraPermission] = useState(false);
+  const [locationPermission, setLocationPermisson] = useState(false);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [loading, setLoading] = useState(false);
   const [clockInResponse, setClockInResponse] = useState({});
@@ -41,22 +42,39 @@ export default function FaceTerminal(props) {
 
   let camera = {};
 
+  async function checkMultiPermissions() {
+    const { status, expires, permissions } = await Permissions.getAsync(
+      Permissions.LOCATION,
+      Permissions.CAMERA
+    );
+
+    setCameraPermission(permissions.camera.granted);
+    setLocationPermisson(permissions.location.granted);
+  }
+
   useEffect(() => {
-    (async () => {
-      const { cameraStatus } = await Camera.requestPermissionsAsync();
-      const { locationStatus } = await Permissions.askAsync(Permissions.LOCATION);
-      setHasPermission(cameraStatus === "granted" && locationStatus === "granted");
-    })();
+    checkMultiPermissions();
   }, []);
 
   useEffect(() => {
     (async () => {
-      if (hasPermission == true) {
+      if (locationPermission) {
         const location = await Location.getCurrentPositionAsync();
+        consolelog(location);
         setCurrentLocation(location);
+      } else {
+        await Permissions.askAsync(Permissions.LOCATION);
       }
     })();
-  }, [hasPermission]);
+  });
+
+  useEffect(() => {
+    (async () => {
+      if (!cameraPermission) {
+        await Permissions.askAsync(Permissions.CAMERA);
+      }
+    })();
+  }, [cameraPermission]);
 
   useEffect(() => {
     if (clockInResponse) {
@@ -71,12 +89,27 @@ export default function FaceTerminal(props) {
       async function runRecognize() {
         await recognize();
       }
-
-      runRecognize().then(() => {
-        setRecognizing(false);
-      });
+      runRecognize();
     }
   }, [faceDetected]);
+
+  useEffect(() => {
+    (async () => {
+      const company = await getLoggedInCompany();
+      const status = await statusRequest(
+        recognizeResponse.employee.login_code,
+        company
+      )
+        .then(resp => {
+          return resp.json();
+        })
+        .then(json => {
+          if (json !== undefined && !json.hasOwnProperty("error")) {
+            setStatus(json.result);
+          }
+        });
+    })();
+  }, [recognizeResponse]);
 
   async function recognize() {
     if (!recognizing && camera !== undefined && camera !== {}) {
@@ -87,7 +120,6 @@ export default function FaceTerminal(props) {
           base64: true
         })
         .catch(err => {
-          console.log(err);
         });
 
       const response = await recognizeRequest(photo)
@@ -95,35 +127,20 @@ export default function FaceTerminal(props) {
           return response.json();
         })
         .then(json => {
+          setRecognizing(false);
           try {
             setRecognizeResponse(json.result);
           } catch (exception) {
-            console.log(exception);
             setRecognizeResponse(false);
             setError(json);
             reset();
           }
           setLoading(false);
-          return
+          return;
         })
         .catch(exc => {
           reset();
         });
-
-      const company = await getLoggedInCompany();
-
-      const status = await statusRequest(recognizeResponse.employee.login_code, company)
-        .then(resp => {
-          return resp.json();
-        })
-        .then(json => {
-          console.log(json);
-          if (json !== undefined && ! json.hasOwnProperty("error")) {
-            setStatus(json.result.status)
-          }
-        });
-
-      // return response;
     } else {
       setFaceDetected(false);
     }
@@ -153,16 +170,15 @@ export default function FaceTerminal(props) {
     setFaceDetected(false);
   }
 
-  if (hasPermission === null) {
-    // TODO make a screen for this
-    return <View />;
-  }
+  // if (hasPermission === null) {
+  //   // TODO make a screen for this
+  //   return <View />;
+  // }
 
-  if (hasPermission === false) {
-    // TODO make a screen for this
-    return <Text>No access to camera</Text>;
-  }
-
+  // if (hasPermission === false) {
+  //   // TODO make a screen for this
+  //   return <Text>No access to camera</Text>;
+  // }
 
   return (
     <Camera
@@ -218,13 +234,13 @@ export default function FaceTerminal(props) {
           </Block>
         )}
 
-        {recognizeResponse && (
+        {recognizeResponse && status && (
           <Block flex center style={{ height: height, width: width }}>
             <ClockActionModal
-              employee={recognizeResponse.employee}
+              employee={status.employee}
               currentLocation={currentLocation}
               photo={recognizeResponse.photos[0]}
-              status={status}
+              status={status.status}
               closeModal={closeModal}
             />
           </Block>
@@ -243,18 +259,17 @@ export default function FaceTerminal(props) {
       <Block
         style={{
           zIndex: 2,
-          alignSelf: 'center'
+          alignSelf: "center",
+          paddingBottom: 20
         }}
       >
         <TouchableOpacity style={{ zIndex: 3 }}>
           <Button
-            color="muted"
+            // color="muted"
             // style={{ width: 100 }}
             onPress={() => props.navigation.navigate("EmployeeLoginCode")}
           >
-            <Text style={{ fontSize: 18, color: "white" }}>
-              Use Login Code
-            </Text>
+            <Text style={{ fontSize: 18, color: "white" }}>Use Login Code</Text>
           </Button>
         </TouchableOpacity>
       </Block>

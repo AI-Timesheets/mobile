@@ -56,17 +56,6 @@ function EmployeeLoginCode(props) {
           setPhoto(json.result.employee.photo);
         }
       });
-
-    // console.log(status);
-    // if (company.company_code.toUpperCase() == code.toUpperCase()) {
-    //   setCode("");
-    //   deleteStorageItem("jwt").then(() => {
-    //     props.navigation.goBack();
-    //   });
-    // } else {
-    //   setCode("");
-    //   setError(true);
-    // }
   }
 
   function closeModal() {

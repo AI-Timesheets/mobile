@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { Block, Button, Text, theme } from "galio-framework";
 import Spinner from "react-native-loading-spinner-overlay";
+import * as Location from "expo-location";
+
 import { Icon } from ".";
 import { argonTheme } from "../constants";
 import { clockInRequest, clockOutRequest } from "../actions/ClockInActions";
@@ -15,7 +17,6 @@ const { width, height } = Dimensions.get("screen");
 
 export default function ClockActionModal({
   employee,
-  currentLocation,
   photo,
   status,
   closeModal,
@@ -25,6 +26,19 @@ export default function ClockActionModal({
   const [clockInResponse, setClockInResponse] = useState({});
   const [latestClockIn, setLatestClockIn] = useState("Never");
   const [done, setDone] = useState(false);
+  const [location, setLocation] = useState(false);
+
+  async function getLocation() {
+    return await Location.getCurrentPositionAsync();
+  }
+
+  useEffect(() => {
+    if (!location) {
+      getLocation().then((loco) => {
+        setLocation(loco);
+      })
+    }
+  });
 
   useEffect(() => {
     if (employee.latest_clock_in.length > 0) {
@@ -41,9 +55,9 @@ export default function ClockActionModal({
 
     let latitude = null;
     let longitude = null;
-    if (currentLocation && currentLocation.coords) {
-      latitude = currentLocation.coords.latitude;
-      longitude = currentLocation.coords.longitude;
+    if (location && location.coords) {
+      latitude = location.coords.latitude;
+      longitude = location.coords.longitude;
     }
 
     const response = await clockInRequest(
@@ -51,16 +65,17 @@ export default function ClockActionModal({
       photo.id,
       latitude,
       longitude
-    ).then(response => {
+    )
+      .then(response => {
         return response.json();
       })
       .then(json => {
-        console.log(json);
         setLoading(false);
         setClockInResponse(json.result);
         setDone(true);
       });
 
+    closeModal();
     return response;
   }
 
@@ -69,9 +84,9 @@ export default function ClockActionModal({
 
     let latitude = null;
     let longitude = null;
-    if (currentLocation && currentLocation.coords) {
-      latitude = currentLocation.coords.latitude;
-      longitude = currentLocation.coords.longitude;
+    if (location && location.coords) {
+      latitude = location.coords.latitude;
+      longitude = location.coords.longitude;
     }
 
     const response = await clockOutRequest(
@@ -79,19 +94,36 @@ export default function ClockActionModal({
       photo.id,
       latitude,
       longitude
-    ).then(response => {
+    )
+      .then(response => {
         return response.json();
       })
       .then(json => {
         setLoading(false);
-        setClockInResponse(jso.result);
+        setClockInResponse(json.result);
         setDone(true);
       });
-
+    closeModal();
     return response;
   }
 
-  console.log(status);
+  const convertDate = date => {
+    const dateObj = new Date(date);
+
+    return (
+      dateObj.toLocaleString("default", { month: "long" }) +
+      " " +
+      dateObj.getDate() +
+      " " +
+      dateObj.getFullYear() +
+      " \n" +
+      dateObj.toLocaleString("default", {
+        minute: "2-digit",
+        hour: "2-digit",
+        second: "2-digit"
+      })
+    );
+  };
 
   return (
     <Modal
@@ -150,15 +182,29 @@ export default function ClockActionModal({
                 {employee.first_name} {employee.last_name}
               </Text>
               {employee.latest_clock_in.length > 0 && (
-                <Text
-                  style={{
-                    fontSize: 18,
-                    textAlign: "center",
-                    color: argonTheme.COLORS.BLACK
-                  }}
-                >
-                  Last clocked in: {employee.latest_clock_in[0].timestamp}
-                </Text>
+                <>
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      paddingTop: 15,
+                      color: argonTheme.COLORS.BLACK
+                    }}
+                  >
+                    Last clocked in:
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "",
+                      textAlign: "center",
+                      color: argonTheme.COLORS.BLACK
+                    }}
+                  >
+                    {convertDate(employee.latest_clock_in[0].timestamp)}
+                  </Text>
+                </>
               )}
             </Block>
             <Block flex row middle>
