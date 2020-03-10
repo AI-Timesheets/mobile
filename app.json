@@ -32,7 +32,7 @@
       "versionCode": 1
     },
     "extra": {
-      "apiUrl": "https://4e551f84.ngrok.io"
+      "apiUrl": "https://api-ci.aitimesheets.com"
     },
     "description": "AI Timesheets is a photo based clock-in and clock-out terminal that utilizes facial recognition artificial intelligence to identify employees."
   }
