@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import * as WebBrowser from "expo-web-browser";
 import {
   StyleSheet,
   ImageBackground,
+  ScrollView,
   Dimensions,
   StatusBar,
   KeyboardAvoidingView,
@@ -15,6 +17,7 @@ import { setStorageItem } from "../actions/StorageActions";
 
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
+import { styles } from '../components/AiStyles';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -42,125 +45,87 @@ function Login(props) {
       });
   }
 
+  const openRegisterPage = async () => {
+    let result = await WebBrowser.openBrowserAsync(
+      "https://app.aitimesheets.com"
+    );
+  };
+
   return (
-    <Block flex middle>
-      <StatusBar hidden />
-      <ImageBackground
-        source={Images.Onboarding}
-        style={{ width, height, zIndex: 1 }}
-      >
-        <Block flex middle>
-          <KeyboardAvoidingView behavior="padding" disabled>
-            <Block style={styles.registerContainer}>
-              <Block flex={0.25} middle style={styles.socialConnect}>
+    <Block flex style={styles.profile}>
+      <Block flex>
+        <ImageBackground
+          source={Images.RegisterBackground}
+          style={styles.screenContainter}
+          imageStyle={styles.screenBackground}
+        >
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ width, marginTop: "50%" }}
+          >
+            <Block flex style={styles.contentCard}>
+              <Block style={styles.info}>
+              <Block flex={0.25} middle style={styles.borderedHeading}>
                 <Text color="#8898AA" size={16}>
                   Enter your company login code
                 </Text>
               </Block>
-              <Block flex>
-                <Block flex center>
-                  <View style={{ flex: 1 }}>
-                    <Block width={width * 0.8} style={{ marginTop: 12 }} center>
-                      <SmoothPinCodeInput
-                        cellStyle={{
-                          borderBottomWidth: 2,
-                          borderColor: argonTheme.COLORS.MUTED
-                        }}
-                        placeholder="•"
-                        codeLength={5}
-                        cellStyleFocused={{
-                          borderColor: argonTheme.COLORS.MUTED
-                        }}
-                        value={code}
-                        textStyle={{ color: argonTheme.COLORS.MUTED }}
-                        onTextChange={code => setCode(code)}
-                        secureTextEntry={false}
-                        keyboardType="default"
-                      ></SmoothPinCodeInput>
-                    </Block>
+                {/* <Block width={width * 0.8} style={{ marginTop: 12 }} center> */}
+                <Block middle style={{ marginTop: 20, paddingBottom: 24 }}>
+                  <SmoothPinCodeInput
+                    cellStyle={{
+                      borderBottomWidth: 2,
+                      borderColor: argonTheme.COLORS.MUTED
+                    }}
+                    placeholder="•"
+                    codeLength={5}
+                    cellStyleFocused={{
+                      borderColor: argonTheme.COLORS.MUTED
+                    }}
+                    value={code}
+                    textStyle={{ color: argonTheme.COLORS.MUTED }}
+                    onTextChange={code => setCode(code)}
+                    secureTextEntry={false}
+                    keyboardType="default"
+                  ></SmoothPinCodeInput>
+                </Block>
 
-                    <Block middle>
-                      {error && (
-                        <Text
-                          style={{ paddingTop: 5 }}
-                          size={12}
-                          color={argonTheme.COLORS.ERROR}
-                        >
-                          Incorrect login code, please try again.
-                        </Text>
-                      )}
-                      <Button
-                        color="primary"
-                        style={styles.createButton}
-                        onPress={handleLogin}
-                      >
-                        <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                          LOGIN
-                        </Text>
-                      </Button>
-                    </Block>
-                  </View>
+                <Block middle>
+                  {error && (
+                    <Text
+                      style={{ paddingTop: 5 }}
+                      size={12}
+                      color={argonTheme.COLORS.ERROR}
+                    >
+                      Incorrect login code, please try again.
+                    </Text>
+                  )}
+                  <Button
+                    shadowless
+                    color="primary"
+                    style={styles.aiButton}
+                    onPress={handleLogin}
+                  >
+                    <Text bold size={14} color={argonTheme.COLORS.WHITE}>
+                      LOGIN
+                    </Text>
+                  </Button>
+                </Block>
+                <Block flex={0.25} middle style={{ paddingVertical: 20 }}>
+                  <Text color="#8898AA" size={16} onPress={openRegisterPage}>
+                    Don't have one?
+                  </Text>
+                  <Text bold color="#8898AA" size={14} onPress={openRegisterPage}>
+                  Tap here to register
+                  </Text>
                 </Block>
               </Block>
             </Block>
-          </KeyboardAvoidingView>
-        </Block>
-      </ImageBackground>
+          </ScrollView>
+        </ImageBackground>
+      </Block>
     </Block>
   );
 }
-
-const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    height: height * 0.25,
-    backgroundColor: "#F4F5F7",
-    borderRadius: 4,
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    overflow: "hidden"
-  },
-  socialConnect: {
-    backgroundColor: argonTheme.COLORS.WHITE,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: "#8898AA"
-  },
-  socialButtons: {
-    width: 120,
-    height: 40,
-    backgroundColor: "#fff",
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1
-  },
-  socialTextButtons: {
-    color: argonTheme.COLORS.PRIMARY,
-    fontWeight: "800",
-    fontSize: 14
-  },
-  inputIcons: {
-    marginRight: 12
-  },
-  passwordCheck: {
-    paddingLeft: 15,
-    paddingTop: 13,
-    paddingBottom: 30
-  },
-  createButton: {
-    width: width * 0.5,
-    marginTop: 30
-  }
-});
 
 export default Login;

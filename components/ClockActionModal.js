@@ -34,9 +34,9 @@ export default function ClockActionModal({
 
   useEffect(() => {
     if (!location) {
-      getLocation().then((loco) => {
+      getLocation().then(loco => {
         setLocation(loco);
-      })
+      });
     }
   });
 
@@ -47,7 +47,7 @@ export default function ClockActionModal({
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {}, 3000);
+    setTimeout(closeModal, 15000);
   }, [done === true]);
 
   async function _clockIn() {
@@ -230,7 +230,6 @@ export default function ClockActionModal({
                   shadowless
                   style={{
                     width: 120,
-                    marginRight: 40
                   }}
                   onPress={image => {
                     _clockIn();

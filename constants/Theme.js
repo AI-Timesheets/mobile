@@ -10,6 +10,7 @@ export default {
     WARNING: '#FB6340',
     /*not yet changed */
     MUTED: '#ADB5BD',
+    DARKGRAY: '#444444',
     INPUT: '#DCDCDC',
     INPUT_SUCCESS: '#7BDEB2',
     INPUT_ERROR: '#FCB3A4',

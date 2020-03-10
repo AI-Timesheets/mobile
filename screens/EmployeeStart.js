@@ -19,6 +19,7 @@ import Clock from "../components/Clock";
 
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
+import { styles } from '../components/AiStyles';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -64,8 +65,9 @@ function EmployeeStart(props) {
           return resp.json();
         })
         .then(json => {
-
-          setNumClockedIn(json.result.length);
+          if (json.result) {
+            setNumClockedIn(json.result.length);
+          }
         });
     }
   }, [company]);
@@ -100,16 +102,16 @@ function EmployeeStart(props) {
       <Block flex>
         <ImageBackground
           source={Images.RegisterBackground}
-          style={styles.profileContainer}
-          imageStyle={styles.profileBackground}
+          style={styles.screenContainter}
+          imageStyle={styles.screenBackground}
         >
           <ScrollView
             showsVerticalScrollIndicator={false}
             style={{ width, marginTop: "25%" }}
           >
-            <Block flex style={styles.profileCard}>
-              <Block middle style={styles.avatarContainer}>
-                <Image source={Images.LogoOnboarding} style={styles.avatar} />
+            <Block flex style={styles.contentCard}>
+              <Block middle style={styles.middleImageContainer}>
+                <Image source={Images.LogoOnboarding} style={styles.middleImage} />
               </Block>
               <Block style={styles.info}>
                 <Block middle style={{ marginTop: 20, paddingBottom: 24 }}>
@@ -183,60 +185,5 @@ function EmployeeStart(props) {
     </Block>
   );
 }
-
-const styles = StyleSheet.create({
-  profile: {
-    marginTop: Platform.OS === "android" ? -HeaderHeight : 0,
-    // marginBottom: -HeaderHeight * 2,
-    flex: 1
-  },
-  profileContainer: {
-    width: width,
-    height: height,
-    padding: 0,
-    zIndex: 1
-  },
-  profileBackground: {
-    width: width,
-    height: height
-  },
-  profileCard: {
-    // position: "relative",
-    padding: theme.SIZES.BASE,
-    marginHorizontal: theme.SIZES.BASE,
-    marginTop: 65,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
-    backgroundColor: theme.COLORS.WHITE,
-    shadowColor: "black",
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    shadowOpacity: 0.2,
-    zIndex: 2
-  },
-  info: {
-    paddingHorizontal: 40
-  },
-  avatarContainer: {
-    position: "relative",
-    marginTop: -80
-  },
-  avatar: {
-    width: 124,
-    height: 124
-  },
-  divider: {
-    width: "90%",
-    borderWidth: 1,
-    borderColor: "#E9ECEF"
-  },
-  thumb: {
-    borderRadius: 4,
-    marginVertical: 4,
-    alignSelf: "center",
-    width: thumbMeasure,
-    height: thumbMeasure
-  }
-});
 
 export default EmployeeStart;

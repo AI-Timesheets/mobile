@@ -95,21 +95,23 @@ export default function FaceTerminal(props) {
 
   useEffect(() => {
     (async () => {
-      const company = await getLoggedInCompany();
-      const status = await statusRequest(
-        recognizeResponse.employee.login_code,
-        company
-      )
-        .then(resp => {
-          return resp.json();
-        })
-        .then(json => {
-          if (json !== undefined && !json.hasOwnProperty("error")) {
-            setStatus(json.result);
-          }
-        });
+      if (recognizeResponse.employee) {
+        const company = await getLoggedInCompany();
+        const status = await statusRequest(
+          recognizeResponse.employee.login_code,
+          company
+        )
+          .then(resp => {
+            return resp.json();
+          })
+          .then(json => {
+            if (json !== undefined && !json.hasOwnProperty("error")) {
+              setStatus(json.result);
+            }
+          });
+      }
     })();
-  }, [recognizeResponse]);
+  }, [recognizeResponse.employee]);
 
   async function recognize() {
     if (!recognizing && camera !== undefined && camera !== {}) {
@@ -119,8 +121,7 @@ export default function FaceTerminal(props) {
           quality: 0.2,
           base64: true
         })
-        .catch(err => {
-        });
+        .catch(err => {});
 
       const response = await recognizeRequest(photo)
         .then(response => {
@@ -170,16 +171,6 @@ export default function FaceTerminal(props) {
     setFaceDetected(false);
   }
 
-  // if (hasPermission === null) {
-  //   // TODO make a screen for this
-  //   return <View />;
-  // }
-
-  // if (hasPermission === false) {
-  //   // TODO make a screen for this
-  //   return <Text>No access to camera</Text>;
-  // }
-
   return (
     <Camera
       style={{ flex: 1, height: height }}
@@ -192,7 +183,7 @@ export default function FaceTerminal(props) {
         mode: FaceDetector.Constants.Mode.accurate,
         detectLandmarks: FaceDetector.Constants.Landmarks.none,
         runClassifications: FaceDetector.Constants.Classifications.all,
-        minDetectionInterval: 100
+        minDetectionInterval: 3000
       }}
     >
       <Block style={styles.buttonColumn}>
@@ -227,7 +218,7 @@ export default function FaceTerminal(props) {
         }}
       >
         {recognizing && (
-          <Block flex bottom style={{ marginTop: 300, width: 200 }}>
+          <Block flex center style={{ marginTop: 250, width: 100 }}>
             <BubbleText>
               <Text style={styles.text}>Loading, please wait...</Text>
             </BubbleText>
@@ -246,9 +237,9 @@ export default function FaceTerminal(props) {
           </Block>
         )}
 
-        {!recognizeResponse && (
-          <Block flex center style={{ marginTop: height - 200 }}>
-            <BubbleText color={argonTheme.COLORS.MUTED}>
+        {!modalVisibile && !recognizing && (
+          <Block flex center style={{ marginTop: 250, width: 100 }}>
+            <BubbleText>
               <Text style={styles.text}>
                 Place your face within the camera view.
               </Text>
@@ -265,8 +256,7 @@ export default function FaceTerminal(props) {
       >
         <TouchableOpacity style={{ zIndex: 3 }}>
           <Button
-            // color="muted"
-            // style={{ width: 100 }}
+            shadowless
             onPress={() => props.navigation.navigate("EmployeeLoginCode")}
           >
             <Text style={{ fontSize: 18, color: "white" }}>Use Login Code</Text>

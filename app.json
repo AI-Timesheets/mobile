@@ -10,7 +10,7 @@
     ],
     "version": "1.3.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/imgs/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
@@ -23,10 +23,16 @@
       "**/*"
     ],
     "ios": {
+      "bundleIdentifier": "com.aitimesheets.app",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.aitimesheets.app",
+      "versionCode": 1
+    },
     "extra": {
-      "apiUrl": "https://570b9b57.ngrok.io"
+      "apiUrl": "https://4e551f84.ngrok.io"
     },
     "description": "AI Timesheets is a photo based clock-in and clock-out terminal that utilizes facial recognition artificial intelligence to identify employees."
   }

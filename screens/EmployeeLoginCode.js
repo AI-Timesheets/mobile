@@ -29,6 +29,7 @@ import getLoggedInCompany from "../util/token";
 
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
+import { styles } from '../components/AiStyles';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -78,7 +79,7 @@ function EmployeeLoginCode(props) {
       >
         <Block flex middle>
           <KeyboardAvoidingView behavior="padding" disabled>
-            <Block style={styles.registerContainer}>
+            <Block style={styles.container}>
             {employee && (
               <Block flex center style={{ height: height, width: width }}>
                 <ClockActionModal
@@ -90,7 +91,7 @@ function EmployeeLoginCode(props) {
               </Block>
             )}
 
-              <Block row flex={0.5} style={styles.socialConnect}>
+              <Block row flex={0.5} style={styles.borderedHeading}>
                 <Block
                   style={{
                     position: "absolute",
@@ -158,7 +159,7 @@ function EmployeeLoginCode(props) {
                     )}
                     <Button
                       color="primary"
-                      style={styles.createButton}
+                      style={styles.aiButton}
                       onPress={handleLogin}
                     >
                       <Text bold size={14} color={argonTheme.COLORS.WHITE}>
@@ -175,59 +176,5 @@ function EmployeeLoginCode(props) {
     </Block>
   );
 }
-
-const styles = StyleSheet.create({
-  registerContainer: {
-    width: width * 0.9,
-    height: height * 0.3,
-    backgroundColor: "#F4F5F7",
-    borderRadius: 4,
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1,
-    overflow: "hidden"
-  },
-  socialConnect: {
-    backgroundColor: argonTheme.COLORS.WHITE,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    width: "100%",
-    borderColor: "#8898AA"
-  },
-  socialButtons: {
-    width: 120,
-    height: 40,
-    backgroundColor: "#fff",
-    shadowColor: argonTheme.COLORS.BLACK,
-    shadowOffset: {
-      width: 0,
-      height: 4
-    },
-    shadowRadius: 8,
-    shadowOpacity: 0.1,
-    elevation: 1
-  },
-  socialTextButtons: {
-    color: argonTheme.COLORS.PRIMARY,
-    fontWeight: "800",
-    fontSize: 14
-  },
-  inputIcons: {
-    marginRight: 12
-  },
-  passwordCheck: {
-    paddingLeft: 15,
-    paddingTop: 13,
-    paddingBottom: 30
-  },
-  createButton: {
-    width: width * 0.5,
-    marginTop: 30
-  }
-});
 
 export default EmployeeLoginCode;

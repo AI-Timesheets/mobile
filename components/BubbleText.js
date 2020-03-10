@@ -58,9 +58,10 @@ export default props => {
   return (
     <Block
       style={{
-        width: width,
+        width: width - 50,
         height: 100,
-        justifyContent: "center"
+        justifyContent: "center",
+        alignItems: 'center',
       }}
     >
       <FadeInView
